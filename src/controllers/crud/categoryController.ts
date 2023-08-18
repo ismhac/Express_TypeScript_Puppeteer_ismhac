@@ -13,12 +13,18 @@ export class CategoryController extends CrudController<typeof categoryService>{
     }
 
     async syncData() {
-
-    }
-
-    async crawlData(browserInstance: Browser) {
         const url = "https://shopee.vn/"
+        let browser = await this.startBrowser()
+        let result = this.scrapeCategory(browser, url)
+
+        console.log(result);
     }
+
+    // async crawlData() {
+    //     const url = "https://shopee.vn/"
+    //     let browser = await this.startBrowser
+
+    // }
 
     async startBrowser() {
         let browser: Browser

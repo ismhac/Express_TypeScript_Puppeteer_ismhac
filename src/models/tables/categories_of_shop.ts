@@ -1,4 +1,4 @@
-import { Categories } from './categorires';
+import { Categories } from './categories';
 import { DataTypes } from 'sequelize'
 import { sequelize, Sequelize } from '../base'
 
