@@ -14,8 +14,7 @@ module.exports = {
         'tbl_categories',
         {
           id: {
-            type: Sequelize.DataTypes.UUID,
-            defaultValue: Sequelize.DataTypes.UUIDV4,
+            type: Sequelize.DataTypes.INTEGER,
             primaryKey: true,
           },
           title: {

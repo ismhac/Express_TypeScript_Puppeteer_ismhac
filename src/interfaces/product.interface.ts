@@ -1,3 +1,4 @@
+import { json } from "sequelize"
 
 export interface IProduct {
     id?: string
@@ -5,5 +6,5 @@ export interface IProduct {
     name: string
     price: number
     product_link: string
-    images: []
+    images: string
 }

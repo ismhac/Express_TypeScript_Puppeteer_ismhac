@@ -19,7 +19,7 @@ module.exports = {
             primaryKey: true,
           },
           shop_id: {
-            type: Sequelize.DataTypes.UUID,
+            type: Sequelize.DataTypes.INTEGER,
             allowNull: false,
             references: {
               model: 'tbl_shops',
@@ -27,7 +27,7 @@ module.exports = {
             },
           },
           category_id: {
-            type: Sequelize.DataTypes.UUID,
+            type: Sequelize.DataTypes.INTEGER,
             allowNull: false,
             references: {
               model: 'tbl_categories',

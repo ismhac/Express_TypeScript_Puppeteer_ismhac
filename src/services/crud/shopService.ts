@@ -10,7 +10,7 @@ export class ShopService extends CrudService<typeof Shops>{
     async findOrCreate(params: any, option?: ICrudOption) {
         let shop = await this.model.findOne({
             where: {
-                name: params.name
+                id: params.id
             },
             transaction: option.transaction
         })

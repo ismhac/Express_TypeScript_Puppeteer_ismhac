@@ -8,7 +8,7 @@ import { json } from "sequelize";
 // }
 
 export interface ICategory {
-    id?: string,
+    id?: number,
     title: string,
     link: string,
     image: string,

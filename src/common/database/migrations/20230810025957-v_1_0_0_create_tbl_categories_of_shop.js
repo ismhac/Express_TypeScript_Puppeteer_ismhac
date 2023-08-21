@@ -14,12 +14,11 @@ module.exports = {
         'tbl_categories_of_shop',
         {
           id: {
-            type: Sequelize.DataTypes.UUID,
-            defaultValue: Sequelize.DataTypes.UUIDV4,
+            type: Sequelize.DataTypes.INTEGER,
             primaryKey: true,
           },
           shop_id: {
-            type: Sequelize.DataTypes.UUID,
+            type: Sequelize.DataTypes.INTEGER,
             allowNull: false,
             references: {
               model: 'tbl_shops',

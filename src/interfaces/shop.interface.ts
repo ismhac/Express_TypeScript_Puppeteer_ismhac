@@ -1,6 +1,6 @@
 
 export interface IShop {
-    id?: string
+    id?: number
     name: string
     shop_link: string
     logo: string
