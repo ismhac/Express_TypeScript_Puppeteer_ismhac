@@ -1,27 +1,110 @@
-import { categoryService, categoryShopService, shopService } from "@/services";
+import { categoryOfShopService, categoryService, categoryShopService, shopService } from "@/services";
 import { CrudController } from "../crudController";
 import {
-    ICategory,
-    IShop,
-    ICategoryShop,
-    ICategory_of_Shop,
-    IProduct
-} from "../../interfaces"
-const schedule = require("node-schedule");
-import puppeteer, { Browser, Page } from "puppeteer"
+    ICategory, IShop, ICategoryShop, ICategory_of_Shop, IProduct,
+    ICategoryCraw,
+    ICategory_of_Shop_Craw
+} from "@/interfaces"
+
 import axios from "axios";
-import { resolve } from "path";
-import { reject } from "lodash";
 import { sequelize } from "@/models";
+const fs = require("fs")
 
-
+// Puppeteer 
+const randomUseragent = require('random-useragent');
+const puppeteer = require('puppeteer-extra');
+import { Browser, Page } from "puppeteer"
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const AnonymizeUAPlugin = require('puppeteer-extra-plugin-anonymize-ua');
+puppeteer.use(StealthPlugin());
+puppeteer.use(AnonymizeUAPlugin());
 
 export class CategoryController extends CrudController<typeof categoryService>{
     constructor() {
         super(categoryService)
-        // schedule.scheduleJob('0 0 */1 */1 *', async () => {
-        //     this.syncData()
-        // });
+    }
+
+    async crawlMainCategories(headers: any): Promise<ICategoryCraw[]> {
+        try {
+            const categoryCrawUrl: string = `https://shopee.vn/api/v4/pages/get_category_tree`;
+            const response = await axios.get(categoryCrawUrl, { headers });
+            const categoryCrawJson = JSON.parse(JSON.stringify(response.data));
+
+            const categories: ICategoryCraw[] = categoryCrawJson.data.category_list.map((element: any) => ({
+                id: element.catid,
+                title: element.display_name,
+                category_link: `https://shopee.vn/${element.display_name.toLowerCase().replace(/[& ]+/g, '-')}-cat.${element.catid}`,
+                image: `https://down-vn.img.susercontent.com/file/${element.image}`
+            }));
+
+            return categories;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async crawlShops(category: ICategoryCraw, headers: any): Promise<IShop[]> {
+        try {
+            const shopCrawUrl = `https://shopee.vn/api/v4/official_shop/get_shops_by_category?need_zhuyin=0&category_id=${category.id}`;
+            const response = await axios.get(shopCrawUrl, { headers });
+            const shopCrawJson = response.data;
+            const shops: IShop[] = shopCrawJson.data.brands.flatMap((brandGroup: any) =>
+                brandGroup.brand_ids.map((el: any) => ({
+                    id: el.shopid,
+                    name: el.brand_name,
+                    shop_link: `https://shopee.vn/${el.username}`,
+                    logo: `https://down-vn.img.susercontent.com/file/${el.logo}`
+                }))
+            );
+
+            return shops;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    extractLastInt(s: string): number | null {
+        const match = s.match(/\d+$/);
+        return match ? parseInt(match[0]) : null;
+    }
+
+    async crawlCategoriesOfShop(url: string, shopId: number): Promise<ICategory_of_Shop_Craw[]> {
+        const browser: Browser = await puppeteer.launch({
+            headless: false,
+            executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+            args: ['--start-maximized'],
+        });
+        const page = (await browser.pages())[0]
+
+        try {
+            await page.goto(url);
+            await page.waitForTimeout(5000);
+
+            const categoryElements = await page.$$("#main > div > div:nth-child(3) > div > div > div > div.shop-page > div > div.container > div.shop-page__all-products-section > div._1Jkvaf > div:nth-child(2) .zvVwjQ");
+
+            let categoriesOfShopList: ICategory_of_Shop_Craw[] = []
+
+            for (let i = 1; i < categoryElements.length; i++) {
+                await categoryElements[i].click()
+                await page.waitForTimeout(5000);
+                const currentUrl = page.url()
+                let id = this.extractLastInt(currentUrl)
+                let title = await categoryElements[i].evaluate(el => el.textContent?.trim())
+
+                const categoriesOfShop: ICategory_of_Shop_Craw = {
+                    id: id,
+                    shop_id: shopId,
+                    title: title,
+                    link: currentUrl,
+                }
+                categoriesOfShopList.push(categoriesOfShop);
+            }
+            return categoriesOfShopList;
+        } catch (error) {
+            console.log(error);
+        } finally {
+            await browser.close();
+        }
     }
 
     async syncData() {
@@ -30,50 +113,39 @@ export class CategoryController extends CrudController<typeof categoryService>{
         const cookie = await this.getCookies(browser);
 
         let headers: {} = {
-            "User-Agent": process.env.USER_AGENT || "",
+            "User-Agent": randomUseragent.getRandom([
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246',
+                'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36'
+            ]),
             Cookie: cookie,
         }
 
         // Crawl Main Category
-        const categoryCrawUrl: string = `https://shopee.vn/api/v4/pages/get_category_tree`
-        const response = await axios.get(categoryCrawUrl, { headers });
-        const categoryCrawJson = JSON.parse(JSON.stringify(response.data)); // data main category
-        const categories: ICategory[] = categoryCrawJson.data.category_list.map((element: any) => ({
-            id: element.catid,
-            title: element.display_name,
-            category_link: `https://shopee.vn/${element.display_name.toLowerCase().replace(/[& ]+/g, '-')}-cat.${element.catid}`,
-            image: `https://down-vn.img.susercontent.com/file/${element.image}`
-        }));
-
-        // Crawl Shop
-        if (categories.length > 0) {
+        const categories = await this.crawlMainCategories(headers)
+        if (categories && categories.length > 0) {
             for (const category of categories) {
-                const categoryItem: any = await this.service.findOrCreate(category, { transaction })
-                const shopCrawUrl = `https://shopee.vn/api/v4/official_shop/get_shops_by_category?need_zhuyin=0&category_id=${category.id}`;
-                const response = await axios.get(shopCrawUrl, { headers });
-                const shopCrawJson = response.data;
-                const shops: IShop[] = shopCrawJson.data.brands.flatMap((brandGroup: any) =>
-                    brandGroup.brand_ids.map((el: any) => ({
-                        id: el.shopid,
-                        name: el.brand_name,
-                        shop_link: `https://shopee.vn/${el.username}`,
-                        logo: `https://down-vn.img.susercontent.com/file/${el.logo}`
-                    }))
-                );
-
-                if (shops.length > 0) {
-                    for (const shop of shops) {
-                        const shopItem: any = await shopService.findOrCreate(shop, { transaction })
-                        const categoryShop: ICategoryShop = {
-                            category_id: category.id,
-                            shop_id: shop.id
-                        }
-                        const categoryShopItem: any = await categoryShopService.findOrCreate(categoryShop, { transaction })
-                    }
+                // const categoryItem: any = await this.service.findOrCreate(category, { transaction }) // save to db
+                const shops = await this.crawlShops(category, headers)
+                if (shops && shops.length > 0) {
+                    category.shops = shops
                 }
             }
-            await transaction.commit();
+            await browser.close()
         }
+
+        for (const category of categories) {
+            if (category && category.shops && category.shops.length > 0 && category.shops[1].shop_link) {
+                const url = category.shops[0].shop_link;
+                const shopId = category.shops[0].id;
+                const categoriesOfShopList = await this.crawlCategoriesOfShop(url, shopId);
+
+                console.log(">>> check categories of shop crawl: ", categoriesOfShopList);
+            } else {
+                continue;
+            }
+        }
+        // await transaction.commit(); 
     }
 
     async getCookies(browser: Browser) {
@@ -116,7 +188,8 @@ export class CategoryController extends CrudController<typeof categoryService>{
             try {
                 const browser: Browser = await puppeteer.launch({
                     headless: false,
-                    args: ["--disable-setuid-sandbox"],
+                    // args: ["--disable-setuid-sandbox"],
+                    args: ['--start-maximized'],
                     'ignoreHTTPSErrors': true
                 });
                 resolve(browser)

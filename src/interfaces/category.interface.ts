@@ -1,11 +1,12 @@
-import { json } from "sequelize";
+import { IShop } from "./shop.interface";
 
-// export interface ICategoryCraw {
-//     title: string,
-//     link: string,
-//     image: string,
-//     shops?: Array<ICategoryShop>,
-// }
+export interface ICategoryCraw {
+    id?: number,
+    title: string,
+    link: string,
+    image: string,
+    shops?: Array<IShop>,
+}
 
 export interface ICategory {
     id?: number,
