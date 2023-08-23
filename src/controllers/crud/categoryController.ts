@@ -3,7 +3,8 @@ import { CrudController } from "../crudController";
 import {
     ICategory, IShop, ICategoryShop, ICategory_of_Shop, IProduct,
     ICategoryCraw,
-    ICategory_of_Shop_Craw
+    ICategory_of_Shop_Craw,
+    IShopCraw
 } from "@/interfaces"
 
 import axios from "axios";
@@ -125,10 +126,24 @@ export class CategoryController extends CrudController<typeof categoryService>{
         const categories = await this.crawlMainCategories(headers)
         if (categories && categories.length > 0) {
             for (const category of categories) {
-                // const categoryItem: any = await this.service.findOrCreate(category, { transaction }) // save to db
+                const bodyCategory: ICategory = await this.convertDataCrawledToPrimaryCategory(category)
+                const categoryItem: any = await this.service.findOrCreate(bodyCategory, { transaction }) // save to db
+
+                // Crawl Shop
                 const shops = await this.crawlShops(category, headers)
                 if (shops && shops.length > 0) {
                     category.shops = shops
+                    for (const shop of shops) {
+                        const bodyShop: IShop = await this.convertDataCrawledToPrimaryShop(shop)
+                        const shopItem: any = await shopService.findOrCreate(bodyShop, { transaction }) // save to db
+
+                        // category - shop (relation)
+                        const bodyCategoryShop: ICategoryShop = {
+                            shop_id: shop.id,
+                            category_id: category.id
+                        }
+                        const categoryShopItem: any = await categoryShopService.findOrCreate(bodyCategoryShop, { transaction }) // save to db
+                    }
                 }
             }
             await browser.close()
@@ -138,14 +153,21 @@ export class CategoryController extends CrudController<typeof categoryService>{
             if (category && category.shops && category.shops.length > 0 && category.shops[1].shop_link) {
                 const url = category.shops[0].shop_link;
                 const shopId = category.shops[0].id;
-                const categoriesOfShopList = await this.crawlCategoriesOfShop(url, shopId);
 
-                console.log(">>> check categories of shop crawl: ", categoriesOfShopList);
+                // Crawl Categories Of Shop
+                const categoriesOfShopList = await this.crawlCategoriesOfShop(url, shopId);
+                if (categoriesOfShopList && categoriesOfShopList.length > 0) {
+                    for (const categoriesOfShop of categoriesOfShopList) {
+                        const bodyCategoriesOfShop: ICategory_of_Shop = await this.convertDataCrawledToPrimaryCategoriesOfShop(categoriesOfShop)
+                        const categoriesOfShopItem: any = await categoryOfShopService.findOrCreate(bodyCategoriesOfShop, { transaction }) // save to db
+                    }
+                }
+                // console.log(">>> check categories of shop crawl: ", categoriesOfShopList);
             } else {
                 continue;
             }
         }
-        // await transaction.commit(); 
+        await transaction.commit();
     }
 
     async getCookies(browser: Browser) {
@@ -197,5 +219,35 @@ export class CategoryController extends CrudController<typeof categoryService>{
                 reject(`Start browser fail: ${error}`)
             }
         })
+    }
+
+    convertDataCrawledToPrimaryCategory(body: ICategoryCraw) {
+        const bodyCategory: ICategory = {
+            id: body.id,
+            title: body.title,
+            link: body.link,
+            image: body.image
+        }
+        return bodyCategory
+    }
+
+    convertDataCrawledToPrimaryShop(body: IShopCraw) {
+        const bodyShop: IShop = {
+            id: body.id,
+            name: body.name,
+            shop_link: body.shop_link,
+            logo: body.logo
+        }
+        return bodyShop
+    }
+
+    convertDataCrawledToPrimaryCategoriesOfShop(body: ICategory_of_Shop_Craw) {
+        const bodyCategoriesOfShop: ICategory_of_Shop = {
+            id: body.id,
+            shop_id: body.shop_id,
+            title: body.title,
+            link: body.link
+        }
+        return bodyCategoriesOfShop
     }
 } 

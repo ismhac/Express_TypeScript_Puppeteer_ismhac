@@ -10,8 +10,7 @@ export class CategoryOfShopService extends CrudService<typeof CategoriesOfShop>{
     async findOrCreate(params: any, option?: ICrudOption) {
         let categoryOfShop = await this.model.findOne({
             where: {
-                shop_id: params.shop_id,
-                title: params.title
+                id: params.id,
             },
             transaction: option.transaction
         })

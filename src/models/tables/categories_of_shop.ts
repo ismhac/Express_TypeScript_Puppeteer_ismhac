@@ -3,7 +3,7 @@ import { DataTypes } from 'sequelize'
 import { sequelize, Sequelize } from '../base'
 
 export const CategoriesOfShop = sequelize.define(
-    'tbl_categories_of_shops',
+    'tbl_categories_of_shop',
     {
         id: {
             type: DataTypes.UUID,
