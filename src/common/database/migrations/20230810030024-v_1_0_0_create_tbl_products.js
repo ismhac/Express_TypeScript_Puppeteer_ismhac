@@ -14,7 +14,8 @@ module.exports = {
         'tbl_products',
         {
           id: {
-            type: Sequelize.DataTypes.INTEGER,
+            type: Sequelize.DataTypes.UUID,
+            defaultValue: Sequelize.DataTypes.UUIDV4,
             primaryKey: true,
           },
           categories_of_shop_id: {
@@ -33,7 +34,7 @@ module.exports = {
           },
 
           product_link: {
-            type: Sequelize.DataTypes.STRING
+            type: Sequelize.DataTypes.TEXT
           },
 
           images: {

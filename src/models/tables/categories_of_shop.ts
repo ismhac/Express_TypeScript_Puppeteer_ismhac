@@ -22,7 +22,7 @@ export const CategoriesOfShop = sequelize.define(
             type: DataTypes.STRING
         },
         link: {
-            type: DataTypes.STRING
+            type: DataTypes.TEXT
         },
 
     },

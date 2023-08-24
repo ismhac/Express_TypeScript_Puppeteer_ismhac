@@ -21,7 +21,7 @@ module.exports = {
             type: Sequelize.DataTypes.STRING,
           },
           category_link: {
-            type: Sequelize.DataTypes.STRING,
+            type: Sequelize.DataTypes.TEXT,
           },
           image: {
             type: Sequelize.DataTypes.JSON

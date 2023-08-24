@@ -1,8 +1,9 @@
+import { UUID } from "crypto"
 import { json } from "sequelize"
 
 export interface IProduct {
-    id?: string
-    categories_of_shop_id: string
+    id?: UUID
+    categories_of_shop_id: number
     name: string
     price: number
     product_link: string

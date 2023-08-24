@@ -21,7 +21,7 @@ module.exports = {
             type: Sequelize.DataTypes.STRING,
           },
           shop_link: {
-            type: Sequelize.DataTypes.STRING,
+            type: Sequelize.DataTypes.TEXT,
           },
           logo: {
             type: Sequelize.DataTypes.JSON

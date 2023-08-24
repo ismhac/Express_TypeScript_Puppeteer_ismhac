@@ -13,7 +13,7 @@ export const Categories = sequelize.define(
             type: DataTypes.STRING,
         },
         category_link: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
         },
         image: {
             type: DataTypes.JSON

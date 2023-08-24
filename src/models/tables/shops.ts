@@ -13,7 +13,7 @@ export const Shops = sequelize.define(
             type: DataTypes.STRING,
         },
         shop_link: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
         },
         logo: {
             type: DataTypes.JSON

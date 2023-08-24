@@ -1,4 +1,4 @@
-import { categoryOfShopService, categoryService, categoryShopService, shopService } from "@/services";
+import { categoryOfShopService, categoryService, categoryShopService, productService, shopService } from "@/services";
 import { CrudController } from "../crudController";
 import {
     ICategory, IShop, ICategoryShop, ICategory_of_Shop, IProduct,
@@ -64,9 +64,9 @@ export class CategoryController extends CrudController<typeof categoryService>{
         }
     }
 
-    extractLastInt(s: string): number | null {
+    extractLastInt(s: string): number {
         const match = s.match(/\d+$/);
-        return match ? parseInt(match[0]) : null;
+        return match ? parseInt(match[0]) : Math.floor(Math.random() * 1000000000) + 100000000;
     }
 
     async crawlCategoriesOfShop(url: string, shopId: number): Promise<ICategory_of_Shop_Craw[]> {
@@ -105,6 +105,54 @@ export class CategoryController extends CrudController<typeof categoryService>{
             console.log(error);
         } finally {
             await browser.close();
+        }
+    }
+
+    async crawlProduct(shopLink: string, categoryOfShopId: number) {
+        const browser: Browser = await puppeteer.launch({
+            headless: false,
+            executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+            args: ['--start-maximized'],
+        });
+
+        try {
+            let products: IProduct[] = []
+
+            for (let i = 0; i < 2; i++) {
+                const url = `${shopLink}?page=${i}&shopCollection=${categoryOfShopId}`
+                const page = (await browser.pages())[0]
+                await page.goto(url)
+                await page.waitForTimeout(10000);
+                const productElements = await page.$$(".shop-search-result-view__item.col-xs-2-4")
+                if (productElements.length < 1) {
+                    continue
+                } else {
+                    for (const item of productElements) {
+                        const link = (await ((await (await item.$("a[data-sqe='link']"))?.getProperty("href"))?.jsonValue())).trim()
+                        const name = (await ((await (await item.$(".h0HBrE.ckHqor._5Kkvx1"))?.getProperty("textContent"))?.jsonValue())).trim()
+                        const price = await ((await (await (await item.$("._0ZJOIv"))?.getProperty("textContent"))?.jsonValue()).trim())
+                        let image = await ((await (await item.$(".vYyqCY.yg8VCe"))?.getProperty("src"))?.jsonValue()) as string
+
+                        if (image === undefined) {
+                            image = "No Image"
+                        }
+
+                        const product: IProduct = {
+                            categories_of_shop_id: categoryOfShopId,
+                            name: name,
+                            price: parseInt(price),
+                            product_link: link,
+                            images: image
+                        }
+                        products.push(product)
+                    }
+                }
+            }
+            return products
+        } catch (error) {
+            console.log(error);
+        } finally {
+            browser.close()
         }
     }
 
@@ -160,6 +208,14 @@ export class CategoryController extends CrudController<typeof categoryService>{
                     for (const categoriesOfShop of categoriesOfShopList) {
                         const bodyCategoriesOfShop: ICategory_of_Shop = await this.convertDataCrawledToPrimaryCategoriesOfShop(categoriesOfShop)
                         const categoriesOfShopItem: any = await categoryOfShopService.findOrCreate(bodyCategoriesOfShop, { transaction }) // save to db
+
+                        const products = await this.crawlProduct(url, categoriesOfShop.id)
+                        // console.log(">>> check product list: ", products);
+                        if (products && products.length > 0) {
+                            for (const bodyProduct of products) {
+                                const productItem: any = await productService.findOrCreate(bodyProduct, { transaction }) // save to db
+                            }
+                        }
                     }
                 }
                 // console.log(">>> check categories of shop crawl: ", categoriesOfShopList);
@@ -173,8 +229,7 @@ export class CategoryController extends CrudController<typeof categoryService>{
     async getCookies(browser: Browser) {
         return new Promise<string>(async (resolve, reject) => {
             try {
-                const page: Page = await browser.newPage();
-                await page.setViewport({ width: 1535, height: 700 });
+                const page = (await browser.pages())[0]
                 await page.goto('https://shopee.vn/buyer/login');   // Go to Login Page
 
                 await page.waitForSelector('input[name="loginKey"]', {

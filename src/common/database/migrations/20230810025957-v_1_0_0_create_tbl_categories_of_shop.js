@@ -29,7 +29,7 @@ module.exports = {
             type: Sequelize.DataTypes.STRING
           },
           link: {
-            type: Sequelize.DataTypes.STRING
+            type: Sequelize.DataTypes.TEXT
           },
           created_at: {
             type: Sequelize.DataTypes.DATE,
