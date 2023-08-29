@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize'
 import { sequelize, Sequelize } from '../base'
 
 export const Products = sequelize.define(
-    'tbl_categories_of_shops',
+    'tbl_products',
     {
         id: {
             type: DataTypes.UUID,
@@ -10,7 +10,7 @@ export const Products = sequelize.define(
             primaryKey: true,
         },
         categories_of_shop_id: {
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER,
             allowNull: true,
             references: {
                 model: 'tbl_categories_of_shop',
@@ -24,7 +24,7 @@ export const Products = sequelize.define(
             type: DataTypes.INTEGER
         },
         product_link: {
-            type: DataTypes.STRING
+            type: DataTypes.TEXT
         },
         images: {
             type: DataTypes.JSON

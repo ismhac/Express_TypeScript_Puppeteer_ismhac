@@ -5,15 +5,14 @@ export const Shops = sequelize.define(
     'tbl_shops',
     {
         id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV1,
+            type: DataTypes.INTEGER,
             primaryKey: true,
         },
         name: {
             type: DataTypes.STRING,
         },
         shop_link: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
         },
         logo: {
             type: DataTypes.JSON

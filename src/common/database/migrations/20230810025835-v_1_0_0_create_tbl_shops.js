@@ -14,15 +14,14 @@ module.exports = {
         'tbl_shops',
         {
           id: {
-            type: Sequelize.DataTypes.UUID,
-            defaultValue: Sequelize.DataTypes.UUIDV4,
+            type: Sequelize.DataTypes.INTEGER,
             primaryKey: true,
           },
           name: {
             type: Sequelize.DataTypes.STRING,
           },
           shop_link: {
-            type: Sequelize.DataTypes.STRING,
+            type: Sequelize.DataTypes.TEXT,
           },
           logo: {
             type: Sequelize.DataTypes.JSON

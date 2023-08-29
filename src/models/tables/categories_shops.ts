@@ -11,7 +11,7 @@ export const CategoriesShops = sequelize.define(
             primaryKey: true,
         },
         shop_id: {
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER,
             allowNull: true,
             references: {
                 model: 'tbl_shops',
@@ -19,7 +19,7 @@ export const CategoriesShops = sequelize.define(
             },
         },
         category_id: {
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER,
             allowNull: true,
             references: {
                 model: 'tbl_categories',

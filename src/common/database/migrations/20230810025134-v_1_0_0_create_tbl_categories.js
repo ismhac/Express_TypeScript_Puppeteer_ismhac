@@ -14,15 +14,14 @@ module.exports = {
         'tbl_categories',
         {
           id: {
-            type: Sequelize.DataTypes.UUID,
-            defaultValue: Sequelize.DataTypes.UUIDV4,
+            type: Sequelize.DataTypes.INTEGER,
             primaryKey: true,
           },
           title: {
             type: Sequelize.DataTypes.STRING,
           },
           category_link: {
-            type: Sequelize.DataTypes.STRING,
+            type: Sequelize.DataTypes.TEXT,
           },
           image: {
             type: Sequelize.DataTypes.JSON

@@ -5,15 +5,14 @@ export const Categories = sequelize.define(
     'tbl_categories',
     {
         id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV1,
+            type: DataTypes.INTEGER,
             primaryKey: true,
         },
         title: {
             type: DataTypes.STRING,
         },
         category_link: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
         },
         image: {
             type: DataTypes.JSON

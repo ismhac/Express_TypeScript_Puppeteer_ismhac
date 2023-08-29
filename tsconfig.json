@@ -19,12 +19,12 @@
                 "src/*"
             ]
         },
-      "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true
     },
     "include": [
         "src/**/*"
     ],
     "exclude": [
-      "src/common/database"
+        "src/common/database"
     ]
 }

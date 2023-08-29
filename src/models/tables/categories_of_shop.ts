@@ -3,15 +3,14 @@ import { DataTypes } from 'sequelize'
 import { sequelize, Sequelize } from '../base'
 
 export const CategoriesOfShop = sequelize.define(
-    'tbl_categories_of_shops',
+    'tbl_categories_of_shop',
     {
         id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV1,
+            type: DataTypes.INTEGER,
             primaryKey: true,
         },
         shop_id: {
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER,
             allowNull: true,
             references: {
                 model: 'tbl_shops',
@@ -22,7 +21,7 @@ export const CategoriesOfShop = sequelize.define(
             type: DataTypes.STRING
         },
         link: {
-            type: DataTypes.STRING
+            type: DataTypes.TEXT
         },
 
     },

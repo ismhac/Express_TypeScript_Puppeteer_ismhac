@@ -1,23 +1,23 @@
 # nodejs-express-craw-f1
 
-Here is the server craw data from the formula1.com site including:
+Here is the server craw data from the shopee.vn site including:
 
-1. All data of teams: working and not work (373 record).
-2. All data of drivers: working and not work (2101 record).
-3. All races from 1950 (1086 record).
-4. All race results from 1950 (24098 record).
+1. All data of main categories: working and not work (28 record).
+2. All data of shops: working and not work (3137 record).
+3. All data of categories of shops (235 record).
+4. All data of products (6064 record).
 
-###### recomend using: Nodejs v14.21.3, TypeScript v5.0.4
+###### recomend using: Nodejs v20.5.1, TypeScript v5.1.6
 
 # How to run server from local
 
-1. Check node version(14.21.3) and TypeScript [https://www.npmjs.com/package/typescript/v/5.0.4](https://www.npmjs.com/package/typescript/v/5.0.4)
+1. Check node version(20.5.1) and TypeScript [https://www.npmjs.com/package/typescript/v/5.1.6](https://www.npmjs.com/package/typescript/v/5.1.6)
 2. install [https://www.npmjs.com/package/sequelize-cli](https://www.npmjs.com/package/sequelize-cli) to migrate Database
 3. install postgresql
 4. Prepare .env file connect to database
 5. run `npm install`
-6. Run `npm run start:dev` or parallel (`npm run watch-ts` + `npm run watch-babel`) ==> Run server local
-7. Run `npm run db:migrate` ==> this command is migrate database **(important)** or you can import database from file &#96;databaseCrawedDataF1&#96;
+6. Run `npm run dev` ==> Run server local
+7. Run `npm run db:migrate` ==> this command is migrate database **(important)** or you can import database from file &#96;databaseCrawedDataShopee.sql&#96;
 
 # How to migrate database
 
@@ -49,53 +49,64 @@ Here is the server craw data from the formula1.com site including:
 
 ### How To Use APIs
 
-- Refer to ERD image: erd-image-craw-f1.png
-- If you use an empty database, you can sync data by calling the api: [http://localhost:4000/api/v1/races/sync-data]
-- To save your time you can import this sql(in the root directory) and use: databaseCrawedDataF1
-- You can refer to image "craw-data-architecture.png" to see how i craw the data from F1
-- The server will automatically sync data once a day (schedule)
-- Example: Race restful api.
-  Get list : [http://localhost:4000/api/v1/races](http://localhost:4000/api/v1/races)
+- Refer to ERD image: erd-image-craw-shopee.png
+- If you use an empty database, you can sync data by calling the api: [http://localhost:4000/api/v1/categories/sync-data]
+- To save your time you can import this sql(in the root directory) and use: databaseCrawedDataShopee.sql
+- You can refer to image "craw-data-architecture.png" to see how i craw the data from Shopee.vn
+
+- Example: Category restful api.
+  Get list : [http://localhost:4000/api/v1/categories](http://localhost:4000/api/v1/categories)
   It has a total of 4 main query params including: fields, page, limit, where, order
 
 1. fields: it's an array, you can get the columns you need or all with ?fields=["$all"] and you can join table
-   **example 1:** [http://localhost:4000/api/v1/races?fields=["grand_prix"]](http://localhost:4000/api/v1/races?fields=["grand_prix"])
+   **example 1:** [http://localhost:4000/api/v1/categories?fields=["title"]](http://localhost:4000/api/v1/categories?fields=["title"])
 
 ```json
 {
-  "id": "....",
-  "updatedAt": "....",
-  "grand_prix": "Spain"
+  "id": 11035567,
+  "updatedAt": "2023-08-24T08:53:58.722Z",
+  "createdAt": "2023-08-24T08:53:58.722Z",
+  "title": "Thời Trang Nam"
 }
 ```
 
-**Example 2:** [http://localhost:4000/api/v1/races?fields=["$all"]](http://localhost:4000/api/v1/races?fields=["$all"])
+**Example 2:** [http://localhost:4000/api/v1/categories?fields=["$all"]](http://localhost:4000/api/v1/categories?fields=["$all"])
 The response is:
 
 ```json
 {
-  "id": "xx",
-  "grand_prix": "Spain",
-  "date": "2023-06-04T05:00:00.000Z",
-  "year": 2023,
-  "createdAt": "xx",
-  "updatedAt": "xx",
+  "id": 11035567,
+  "title": "Thời Trang Nam",
+  "category_link": null,
+  "image": "https://down-vn.img.susercontent.com/file/687f3967b7c2fe6a134a2c11894eea4b",
+  "createdAt": "2023-08-24T08:53:58.722Z",
+  "updatedAt": "2023-08-24T08:53:58.722Z",
   "deletedAt": null
 }
 ```
 
-**example 3:** Join table [http://localhost:4000/api/v1/races?fields=["year",{"drivers_of_race":["$all",{"driver":["$all"]}]}]](http://localhost:4000/api/v1/races?fields=["year",{"drivers_of_race":["$all",{"driver":["$all"]}]}])
+**example 3:** Join table [http://localhost:4000/api/v1/categories?fields=[%22title%22,%20{%22categories_shops%22:%20[%22$all%22,%20{%22shop%22:[%22$all%22]}]}]](http://localhost:4000/api/v1/categories?fields=[%22title%22,%20{%22categories_shops%22:%20[%22$all%22,%20{%22shop%22:[%22$all%22]}]}])
 
 ```json
 {
-  "id": "xx",
-  "grand_prix": "Spain",
-  "date": "2023-06-04T05:00:00.000Z",
-  "drivers_of_race": [
+  "id": 11035567,
+  "updatedAt": "2023-08-24T08:53:58.722Z",
+  "createdAt": "2023-08-24T08:53:58.722Z",
+  "title": "Thời Trang Nam",
+  "categories_shops": [
     {
-      "data of drivers_of_race": "data of drivers_of_race",
-      "driver": {
-        "data of driver": "data of driver"
+      "id": "c3f9a8c0-425b-11ee-91f3-c734cecbfb91",
+      "shop_id": 264864918,
+      "category_id": 11035567,
+      "createdAt": "2023-08-24T08:53:59.244Z",
+      "updatedAt": "2023-08-24T08:53:59.244Z",
+      "shop": {
+          "id": 264864918,
+          "name": "Insidemen",
+          "shop_link": "https://shopee.vn/insidemen.official",
+          "logo": "https://down-vn.img.susercontent.com/file/f4ab0b971d102ca26651885499ba7d40",
+          "createdAt": "2023-08-24T08:53:59.243Z",
+          "updatedAt": "2023-08-24T08:53:59.243Z"
       }
     }
   ]
@@ -104,16 +115,16 @@ The response is:
 
 ### 2. Page : you can specify the page in the api
 
-**Example 1:** [http://localhost:4000/api/v1/races?fields=["$all"]&limit=10&page=1](http://localhost:4000/api/v1/races?fields=["$all"])
+**Example 1:** [http://localhost:4000/api/v1/categories?fields=["$all"]&limit=10&page=1](http://localhost:4000/api/v1/categories?fields=["$all"])
 
 ### 3. Limit : you can specify the limit in the api
 
-**Example 1:** [http://localhost:4000/api/v1/races?fields=["$all"]&limit=10&page=1](http://localhost:4000/api/v1/races?fields=["$all"])
+**Example 1:** [http://localhost:4000/api/v1/categories?fields=["$all"]&limit=10&page=1](http://localhost:4000/api/v1/categories?fields=["$all"])
 
 ### 4. Where: you can join the table looking for everything with the condition
 
 **example 1:** query with conditon grand_prix:"Spain"
-[http://localhost:4000/api/v1/races?fields=["$all"]&where={"grand_prix":"Spain"}](http://localhost:4000/api/v1/races?fields=["$all"]&where={"grand_prix":"Spain"})
+[http://localhost:4000/api/v1/categories?fields=["$all"]&where={"title":"Đồng%20Hồ"}](http://localhost:4000/api/v1/categories?fields=["$all"]&where={"title":"Đồng%20Hồ"})
 The resuli is
 
 ```json
@@ -121,12 +132,12 @@ The resuli is
   "count": 1,
   "rows": [
     {
-      "id": "xx",
-      "grand_prix": "Spain",
-      "date": "xx",
-      "year": 2023,
-      "createdAt": "xx",
-      "updatedAt": "xx",
+      "id": 11035788,
+      "title": "Đồng Hồ",
+      "category_link": null,
+      "image": "https://down-vn.img.susercontent.com/file/86c294aae72ca1db5f541790f7796260",
+      "createdAt": "2023-08-24T08:54:05.665Z",
+      "updatedAt": "2023-08-24T08:54:05.665Z",
       "deletedAt": null
     }
   ]
@@ -134,29 +145,30 @@ The resuli is
 ```
 
 **example 2:** query join table
-`http://localhost:4000/api/v1/drivers?fields=["$all",{"team":["$all"]}]&where={"$team.name$":"McLaren F1 Team"}`
+`http://localhost:4000/api/v1/products?fields=["$all",{"categories_of_shop":["$all"]}]&where={"$categories_of_shop.shop_id$":"410977670"}`
 or
-`http://localhost:4000/api/v1/drivers?fields=["$all",{"team":["$all"]}]&where={"$team.name$": {"$eq":"McLaren F1 Team"}}`
-**Detail:** get all drivers in the team "McLaren F1 Team"
+`http://localhost:4000/api/v1/products?fields=["$all",{"categories_of_shop":["$all"]}]&where={"$categories_of_shop.shop_id$":{"$eq":"410977670"}}`
+**Detail:** get all products in the shop id "410977670"
 _You can refer to more operations at:: https://sequelize.org/docs/v6/core-concepts/model-querying-basics_
 
 ### 5. order: you can sort the position of the main table or the child table
 
-**example 1:** api get raking of a race
-[http://localhost:4000/api/v1/drivers-of-race?fields=["$all",{"driver":["$all"]},{"race":["$all"]}]&where={"$race.grand_prix$":"Bahrain"}&order=[["pos","asc"]]](http://localhost:4000/api/v1/drivers-of-race?fields=["$all",{"driver":["$all"]},{"race":["$all"]}]&where={"$race.grand_prix$":"Bahrain"}&order=[["pos","asc"]])
+**example 1:** api get products of a shop
+[http://localhost:4000/api/v1/products?fields=["$all",{"categories_of_shop":["$all"]}]&where={"$categories_of_shop.shop_id$":{"$eq":"410977670"}}&order=[["price","DESC"]]](http://localhost:4000/api/v1/products?fields=["$all",{"categories_of_shop":["$all"]}]&where={"$categories_of_shop.shop_id$":{"$eq":"410977670"}}&order=[["price","DESC"]])
 
 ### 6. Postman API docs
 
 you can import JSON postman to see all the api I wrote available:
-`crawf1.json`
+`crawshopee.json`
 or you can use this link:
-[https://www.postman.com/dark-space-8177-1/workspace/vrillar-test-exam/collection/3867591-b56ba129-e593-413e-85a1-3d7e61214174?action=share&creator=3867591]
+[https://www.postman.com/orbital-module-engineer-83357203/workspace/captain-hac-workspace/request/26491174-ccae95ff-8771-47f4-9362-9c6518ad4eeb]
 
-    ├── Races                   # RESTful API of Races and custom api
-    ├── Sync data from F1       # APIs for sync data
-    ├── Driver of race          # RESTful API of race and custom api
-    ├── Teams                   # RESTful API of Teams and custom api
-    ├── Drivers                 # RESTful API of Drivers and custom api
-    ├── Result                  # APIs statistics and simulation of page-like response data: https://www.formula1.com/en/results.html
+    ├── Sync data from shopee   # APIs for sync data
+    ├── Categories              # RESTful API of Categories
+    ├── Shops                   # RESTful API of Shops
+    ├── Products                # RESTful API of Products
+    ├── Categories_shops        # RESTful API of Relation table of Main Category table and Shop table
+    ├── Categories_Of_Shop      # RESTful API of Categories of a Shop
+    ├── Custom                  # Custom api and simulate similar feedback data: https://shopee.vn/
 
 
