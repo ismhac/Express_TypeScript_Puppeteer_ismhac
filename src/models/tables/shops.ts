@@ -5,8 +5,7 @@ export const Shops = sequelize.define(
     'tbl_shops',
     {
         id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV1,
+            type: DataTypes.INTEGER,
             primaryKey: true,
         },
         name: {

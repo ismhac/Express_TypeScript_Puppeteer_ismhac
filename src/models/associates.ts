@@ -14,10 +14,20 @@ CategoriesShops.belongsTo(Categories, {
   as: 'category',
 })
 
+Categories.hasMany(CategoriesShops, {
+  foreignKey: 'category_id',
+  as: 'categories_shops'
+})
+
 // Shops
 CategoriesShops.belongsTo(Shops, {
   foreignKey: 'shop_id',
   as: 'shop',
+})
+
+Shops.hasMany(CategoriesShops, {
+  foreignKey: 'shop_id',
+  as: 'categories_shops'
 })
 
 CategoriesOfShop.belongsTo(Shops, {
@@ -25,9 +35,18 @@ CategoriesOfShop.belongsTo(Shops, {
   as: 'shop'
 })
 
+Shops.hasMany(CategoriesOfShop, {
+  foreignKey: 'shop_id',
+  as: 'categories_of_shops'
+})
 
 // Product
 Products.belongsTo(CategoriesOfShop, {
   foreignKey: 'categories_of_shop_id',
   as: 'categories_of_shop',
+})
+
+CategoriesOfShop.hasMany(Products, {
+  foreignKey: 'categories_of_shop_id',
+  as: 'products'
 })

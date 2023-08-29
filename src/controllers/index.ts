@@ -1,30 +1,28 @@
 import { CrudController } from './crudController';
 import { CategoryController } from './crud/categoryController';
-// import { TeamController } from './crud/teamController'
-// import { DriverController } from './crud/driverController';
-// import { RacesController } from './crud/racesController';
-// import { DriversOfRaceController } from './crud/driversOfRaceController';
-
-
+import { ProductController } from './crud/productController';
+import { ShopController } from './crud/shopController';
+import { CategoryShopController } from './crud/categoryShopController';
+import { CategoryOfShopController } from './crud/categoryOfShopController';
 
 // SECTION
 
 // Crud
-// const teamController = new TeamController()
-// const driverController = new DriverController()
-// const racesController = new RacesController()
-// const driversOfRaceController = new DriversOfRaceController()
-const categoryController = new CategoryController()
 
+const categoryController = new CategoryController();
+const productController = new ProductController();
+const shopController = new ShopController();
+const categoryShopController = new CategoryShopController();
+const categoryOfShopController = new CategoryOfShopController();
 
 
 // SECTION
 
 export {
   CrudController,
-  categoryController
-  // teamController,
-  // driverController,
-  // racesController,
-  // driversOfRaceController
+  categoryController,
+  productController,
+  shopController,
+  categoryShopController,
+  categoryOfShopController
 };

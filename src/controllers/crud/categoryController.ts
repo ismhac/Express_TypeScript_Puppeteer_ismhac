@@ -25,6 +25,16 @@ export class CategoryController extends CrudController<typeof categoryService>{
         super(categoryService)
     }
 
+    // get categories of a shop
+    async getResultAllCategoryByShopId(params: { shop_id: Number }) {
+        try {
+            const result = await this.service.getResultAllCategoryByShopId(params)
+            return result
+        } catch (error) {
+            console.log(">>> Error in CategoryController -> getResultAllCategoryByShopId: ", error);
+        }
+    }
+
     async crawlMainCategories(): Promise<ICategoryCraw[]> {
         console.log("=== Crawl main category ===");
         try {
@@ -183,7 +193,7 @@ export class CategoryController extends CrudController<typeof categoryService>{
             }
 
             for (const category of categories) {
-                if (category && category.shops && category.shops.length > 0 && category.shops[1].shop_link) {
+                if (category && category.shops && category.shops.length > 0 && category.shops[0].shop_link) {
                     const url = category.shops[0].shop_link;
                     const shopId = category.shops[0].id;
 

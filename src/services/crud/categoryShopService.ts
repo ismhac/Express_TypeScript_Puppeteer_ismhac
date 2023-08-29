@@ -1,7 +1,6 @@
 import { CategoriesShops } from "@/models";
 import { CrudService } from "../crudService.pg";
 import { ICrudOption } from "@/interfaces";
-
 export class CategoryShopService extends CrudService<typeof CategoriesShops>{
     constructor() {
         super(CategoriesShops)
@@ -20,4 +19,5 @@ export class CategoryShopService extends CrudService<typeof CategoriesShops>{
         }
         return categoryShop
     }
+
 }

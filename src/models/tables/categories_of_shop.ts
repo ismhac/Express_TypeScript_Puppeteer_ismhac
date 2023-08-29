@@ -6,12 +6,11 @@ export const CategoriesOfShop = sequelize.define(
     'tbl_categories_of_shop',
     {
         id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV1,
+            type: DataTypes.INTEGER,
             primaryKey: true,
         },
         shop_id: {
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER,
             allowNull: true,
             references: {
                 model: 'tbl_shops',

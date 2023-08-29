@@ -13,7 +13,7 @@ export default {
     database: {
         mongo: process.env.MONGODB_URI,
         sessionSecret: process.env.SESSION_SECRET,
-        defaultPageSize: 50,
+        defaultPageSize: 10,
         sql: sql.development
     },
     firebase: {

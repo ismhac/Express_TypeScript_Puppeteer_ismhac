@@ -10,7 +10,7 @@ export const Products = sequelize.define(
             primaryKey: true,
         },
         categories_of_shop_id: {
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER,
             allowNull: true,
             references: {
                 model: 'tbl_categories_of_shop',

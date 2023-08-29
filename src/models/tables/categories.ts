@@ -5,8 +5,7 @@ export const Categories = sequelize.define(
     'tbl_categories',
     {
         id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV1,
+            type: DataTypes.INTEGER,
             primaryKey: true,
         },
         title: {
