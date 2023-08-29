@@ -169,6 +169,6 @@ or you can use this link:
     ├── Products                # RESTful API of Products
     ├── Categories_shops        # RESTful API of Relation table of Main Category table and Shop table
     ├── Categories_Of_Shop      # RESTful API of Categories of a Shop
-    ├── Custom                  # Custom api and simulate similar feedback data: https://shopee.vn/
+    ├── Custom                  # Custom api and simulation of page-like response data: https://shopee.vn/
 
 
