@@ -85,7 +85,7 @@ The response is:
 }
 ```
 
-**example 3:** Join table [http://localhost:4000/api/v1/categories?fields=[%22title%22,%20{%22categories_shops%22:%20[%22$all%22,%20{%22shop%22:[%22$all%22]}]}]](http://localhost:4000/api/v1/categories?fields=[%22title%22,%20{%22categories_shops%22:%20[%22$all%22,%20{%22shop%22:[%22$all%22]}]}])
+**example 3:** Join table [http://localhost:4000/api/v1/categories?fields=["title",{"categories_shops":["$all",{"shop":["$all"]}]}]](http://localhost:4000/api/v1/categories?fields=["title",{"categories_shops":["$all",{"shop":["$all"]}]}])
 
 ```json
 {
@@ -124,7 +124,7 @@ The response is:
 ### 4. Where: you can join the table looking for everything with the condition
 
 **example 1:** query with conditon grand_prix:"Spain"
-[http://localhost:4000/api/v1/categories?fields=["$all"]&where={"title":"Đồng%20Hồ"}](http://localhost:4000/api/v1/categories?fields=["$all"]&where={"title":"Đồng%20Hồ"})
+[http://localhost:4000/api/v1/categories?fields=["$all"]&where={"title":"Đồng Hồ"}](http://localhost:4000/api/v1/categories?fields=["$all"]&where={"title":"Đồng Hồ"})
 The resuli is
 
 ```json
